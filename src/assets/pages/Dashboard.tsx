@@ -147,7 +147,7 @@ const Dashboard: React.FC = () => {
   const deleteTask = async (name: string) => {
     try {
       const response = await fetchWithLoading(
-        "https://sheeladecor.netlify.app/.netlify/functions/server/deletetask",
+        "https://sheeladecor.netlify.app/.netlify/functions/server/deletePaintstask",
         {
           method: "POST",
           headers: {

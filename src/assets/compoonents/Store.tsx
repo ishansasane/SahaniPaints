@@ -36,7 +36,7 @@ function Store() {
             <td className="p-2">
               <button
                 onClick={() =>
-                  handleRedirect("https://furnishkaro.netlify.app/")
+                  handleRedirect("https://sheeladecorsite.netlify.app/")
                 }
                 className="bg-green-500 text-white px-4 py-1 rounded hover:bg-green-600"
               >
