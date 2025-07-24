@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { fetchWithLoading } from "../Redux/fetchWithLoading";
-import { Pencil, Trash } from "lucide-react";
+import { Pencil, Trash, Search } from "lucide-react";
 
 // ✅ Helper to check permission
 const hasPermission = (route: string): boolean => {
@@ -27,6 +27,7 @@ function ColourPage() {
   });
   const [editMode, setEditMode] = useState(false);
   const [editTarget, setEditTarget] = useState({ site: "", date: "" });
+  const [searchTerm, setSearchTerm] = useState("");
 
   const canEdit = hasPermission("/edit-colour"); // ✅ Check once
 
@@ -67,6 +68,29 @@ function ColourPage() {
         setTableData(parsed);
       });
   }, []);
+
+  const filteredData = useMemo(() => {
+    if (!searchTerm) return tableData;
+
+    const term = searchTerm.toLowerCase();
+    return tableData.filter(
+      (item) =>
+        item.site.toLowerCase().includes(term) ||
+        item.area.toLowerCase().includes(term) ||
+        item.shadeName.toLowerCase().includes(term) ||
+        item.shadeCode.toLowerCase().includes(term) ||
+        item.date.toLowerCase().includes(term)
+    );
+  }, [tableData, searchTerm]);
+
+  const groupedData = useMemo(() => {
+    return filteredData.reduce((acc, curr) => {
+      const key = `${curr.site}__${curr.date}`;
+      if (!acc[key]) acc[key] = [];
+      acc[key].push(curr);
+      return acc;
+    }, {});
+  }, [filteredData]);
 
   const handleChange = (e) => {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -166,30 +190,37 @@ function ColourPage() {
     }
   };
 
-  const groupedData = tableData.reduce((acc, curr) => {
-    const key = `${curr.site}__${curr.date}`;
-    if (!acc[key]) acc[key] = [];
-    acc[key].push(curr);
-    return acc;
-  }, {});
-
   return (
     <div className="p-4 md:p-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
         <h1 className="text-xl font-bold">Colour Table</h1>
-        <button
-          onClick={() => {
-            setForm({
-              site: "",
-              areas: [{ area: "", shadeName: "", shadeCode: "" }],
-            });
-            setEditMode(false);
-            setOpen(true);
-          }}
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 w-full sm:w-auto"
-        >
-          Add Colour
-        </button>
+        <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+          <div className="relative w-full sm:w-64">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <Search className="h-5 w-5 text-gray-400" />
+            </div>
+            <input
+              type="text"
+              placeholder="Search..."
+              className="pl-10 pr-4 py-2 border rounded-md w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
+          <button
+            onClick={() => {
+              setForm({
+                site: "",
+                areas: [{ area: "", shadeName: "", shadeCode: "" }],
+              });
+              setEditMode(false);
+              setOpen(true);
+            }}
+            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 w-full sm:w-auto"
+          >
+            Add Colour
+          </button>
+        </div>
       </div>
 
       <div className="overflow-x-auto">
@@ -204,55 +235,65 @@ function ColourPage() {
             </tr>
           </thead>
           <tbody>
-            {Object.entries(groupedData).map(([key, entries], idx) => {
-              const [site, date] = key.split("__");
-              return entries.map((entry, index) => (
-                <tr key={`${key}-${index}`}>
-                  {index === 0 && (
-                    <td
-                      className="border px-2 py-1 md:px-4 md:py-2"
-                      rowSpan={entries.length}
-                    >
-                      {site}
+            {Object.entries(groupedData).length > 0 ? (
+              Object.entries(groupedData).map(([key, entries], idx) => {
+                const [site, date] = key.split("__");
+                return entries.map((entry, index) => (
+                  <tr key={`${key}-${index}`}>
+                    {index === 0 && (
+                      <td
+                        className="border px-2 py-1 md:px-4 md:py-2"
+                        rowSpan={entries.length}
+                      >
+                        {site}
+                      </td>
+                    )}
+                    <td className="border px-2 py-1 md:px-4 md:py-2">
+                      {entry.area}
                     </td>
-                  )}
-                  <td className="border px-2 py-1 md:px-4 md:py-2">
-                    {entry.area}
-                  </td>
-                  <td className="border px-2 py-1 md:px-4 md:py-2">
-                    {entry.shadeName}
-                  </td>
-                  <td className="border px-2 py-1 md:px-4 md:py-2">
-                    {entry.shadeCode}
-                  </td>
-                  {index === 0 && (
-                    <td
-                      className="border px-2 py-1 md:px-4 md:py-2"
-                      rowSpan={entries.length}
-                    >
-                      {canEdit && (
-                        <div className="flex gap-1 md:gap-2 justify-center">
-                          <button
-                            onClick={() => handleEdit(site, date)}
-                            className="p-1 rounded hover:bg-gray-200"
-                            title="Edit"
-                          >
-                            <Pencil className="w-4 h-4 md:w-5 md:h-5 text-gray-700" />
-                          </button>
-                          <button
-                            onClick={() => handleDelete(site, date)}
-                            className="p-1 rounded hover:bg-gray-200"
-                            title="Delete"
-                          >
-                            <Trash className="w-4 h-4 md:w-5 md:h-5 text-gray-700" />
-                          </button>
-                        </div>
-                      )}
+                    <td className="border px-2 py-1 md:px-4 md:py-2">
+                      {entry.shadeName}
                     </td>
-                  )}
-                </tr>
-              ));
-            })}
+                    <td className="border px-2 py-1 md:px-4 md:py-2">
+                      {entry.shadeCode}
+                    </td>
+                    {index === 0 && (
+                      <td
+                        className="border px-2 py-1 md:px-4 md:py-2"
+                        rowSpan={entries.length}
+                      >
+                        {canEdit && (
+                          <div className="flex gap-1 md:gap-2 justify-center">
+                            <button
+                              onClick={() => handleEdit(site, date)}
+                              className="p-1 rounded hover:bg-gray-200"
+                              title="Edit"
+                            >
+                              <Pencil className="w-4 h-4 md:w-5 md:h-5 text-gray-700" />
+                            </button>
+                            <button
+                              onClick={() => handleDelete(site, date)}
+                              className="p-1 rounded hover:bg-gray-200"
+                              title="Delete"
+                            >
+                              <Trash className="w-4 h-4 md:w-5 md:h-5 text-gray-700" />
+                            </button>
+                          </div>
+                        )}
+                      </td>
+                    )}
+                  </tr>
+                ));
+              })
+            ) : (
+              <tr>
+                <td colSpan={5} className="text-center py-4">
+                  {searchTerm
+                    ? "No matching results found"
+                    : "No data available"}
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
       </div>

@@ -31,6 +31,8 @@ const canEditAttendance = hasPermission("/edit-attendence");
 
 function LaborsPage() {
   const [labors, setLabors] = useState<string[][]>([]);
+  const [filteredLabors, setFilteredLabors] = useState<string[][]>([]);
+  const [searchTerm, setSearchTerm] = useState("");
   const [name, setName] = useState("");
   const [payment, setPayment] = useState("");
   const [loading, setLoading] = useState(false);
@@ -61,6 +63,7 @@ function LaborsPage() {
       .then((data) => {
         if (data.success) {
           setLabors(data.body);
+          setFilteredLabors(data.body);
         }
       })
       .catch((err) => console.error("Failed to fetch labors:", err))
@@ -104,6 +107,17 @@ function LaborsPage() {
     fetchLabors();
     fetchAttendance();
   }, []);
+
+  useEffect(() => {
+    if (searchTerm.trim() === "") {
+      setFilteredLabors(labors);
+    } else {
+      const filtered = labors.filter(([name]) =>
+        name.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+      setFilteredLabors(filtered);
+    }
+  }, [searchTerm, labors]);
 
   const handleAdd = () => {
     if (!name.trim()) return alert("Name is required");
@@ -270,6 +284,35 @@ function LaborsPage() {
         </button>
       </div>
 
+      {/* Search Bar */}
+      <div className="mb-6">
+        <div className="relative">
+          <input
+            type="text"
+            placeholder="Search labors by name..."
+            className="w-full p-2 pl-10 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+          <div className="absolute left-3 top-2.5 text-gray-400">
+            {/* <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5 p-3"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+              />
+            </svg> */}
+          </div>
+        </div>
+      </div>
+
       <div className="overflow-x-auto">
         <table className="w-full border border-gray-300">
           <thead className="bg-gray-100">
@@ -296,14 +339,16 @@ function LaborsPage() {
                   Loading...
                 </td>
               </tr>
-            ) : labors.length === 0 ? (
+            ) : filteredLabors.length === 0 ? (
               <tr>
                 <td colSpan={5} className="text-center py-4 text-gray-500">
-                  No labors added yet.
+                  {searchTerm.trim()
+                    ? "No matching labors found"
+                    : "No labors added yet."}
                 </td>
               </tr>
             ) : (
-              labors.map(([name, date, pay], idx) => (
+              filteredLabors.map(([name, date, pay], idx) => (
                 <tr key={idx}>
                   <td className="border px-2 py-1 md:px-4 md:py-2">
                     {idx + 1}
