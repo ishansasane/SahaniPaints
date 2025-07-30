@@ -304,7 +304,7 @@ function AddSitePage() {
   };
 
   return (
-    <div className="flex mt-5 md:!mt-1 flex-col gap-8 p-8 bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen w-full font-inter">
+    <div className="flex mt-5 md:!mt-1 flex-col gap-8 md:p-8 py-8 bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen w-full font-inter">
       {/* Header Section */}
       <div className="flex flex-col gap-3">
         <h1 className="text-4xl md:text-5xl font-poppins font-bold text-gray-900 tracking-tight">
@@ -315,7 +315,7 @@ function AddSitePage() {
       {/* Main Content */}
       <div className="space-y-8">
         {/* Customer Details */}
-        <div className="bg-white p-8 !rounded-2xl shadow-lg border border-gray-100 transition-all duration-300 hover:shadow-xl">
+        <div className="bg-white md:p-8 !rounded-2xl shadow-lg border border-gray-100 transition-all duration-300 hover:shadow-xl">
           <CustomerDetails
             customers={customers}
             selectedCustomer={selectedCustomer}
@@ -326,7 +326,7 @@ function AddSitePage() {
         </div>
 
         {/* Project Details */}
-        <div className="bg-white p-8 !rounded-2xl shadow-lg border border-gray-100 transition-all duration-300 hover:shadow-xl">
+        <div className="bg-white md:p-8 !rounded-2xl shadow-lg border border-gray-100 transition-all duration-300 hover:shadow-xl">
           <ProjectDetails
             selectedCustomer={selectedCustomer}
             interior={interior}
@@ -436,7 +436,7 @@ function AddSitePage() {
         </div>
 
         {/* Save Button */}
-        <div className="flex justify-end">
+        <div className="flex md:justify-end justify-center">
           <button
             onClick={handleSaveProjectAndPayment}
             className="px-6 py-3 bg-indigo-600 text-white text-sm font-poppins font-semibold !rounded-lg hover:bg-indigo-700 transition-colors duration-200"

@@ -2339,7 +2339,7 @@ function AddProjectForm() {
   const [editableMRP, setEditableMRP] = useState({});
 
   return (
-    <div className="flex mt-5 md:!mt-1 flex-col gap-8 p-8 bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen w-full font-inter">
+    <div className="flex mt-5 md:!mt-1 flex-col gap-8 md:p-8 py-10 bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen w-full font-inter">
       {/* Header Section */}
       <div className="flex flex-col gap-3">
         <h1 className="text-4xl md:text-5xl font-poppins font-bold text-gray-900 tracking-tight">
@@ -2364,7 +2364,7 @@ function AddProjectForm() {
       {/* Main Content */}
       <div className="space-y-8">
         {/* Customer Details */}
-        <div className="bg-white p-8 !rounded-2xl shadow-lg border border-gray-100 transition-all duration-300 hover:shadow-xl">
+        <div className="bg-white md:p-8 !rounded-2xl shadow-lg border border-gray-100 transition-all duration-300 hover:shadow-xl">
           <CustomerDetails
             customers={customers}
             selectedCustomer={selectedCustomer}
@@ -2375,7 +2375,7 @@ function AddProjectForm() {
         </div>
 
         {/* Project Details */}
-        <div className="bg-white p-8 !rounded-2xl shadow-lg border border-gray-100 transition-all duration-300 hover:shadow-xl">
+        <div className="bg-white md:p-8 !rounded-2xl shadow-lg border border-gray-100 transition-all duration-300 hover:shadow-xl">
           <ProjectDetails
             selectedCustomer={selectedCustomer}
             interior={interior}
@@ -2402,7 +2402,7 @@ function AddProjectForm() {
         </div>
 
         {/* Material Selection */}
-        <div className="bg-white p-8 !rounded-2xl shadow-lg border border-gray-100 transition-all duration-300 hover:shadow-xl">
+        <div className="bg-white md:p-8 !rounded-2xl shadow-lg border border-gray-100 transition-all duration-300 hover:shadow-xl">
           <MaterialSelectionComponent
             selections={selections}
             availableAreas={availableAreas}
@@ -2427,7 +2427,7 @@ function AddProjectForm() {
         </div>
 
         {/* Measurement Section */}
-        <div className="bg-white p-8 !rounded-2xl shadow-lg border border-gray-100 transition-all duration-300 hover:shadow-xl">
+        <div className="bg-white md:p-8 !rounded-2xl shadow-lg border border-gray-100 transition-all duration-300 hover:shadow-xl">
           <MeasurementSection
             selections={selections}
             units={units}

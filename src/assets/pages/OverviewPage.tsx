@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import { setTaskDialogOpen, setProjectFlag } from '../Redux/dataSlice';
-import { useSelector, useDispatch } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
-import { AnimatePresence, motion } from 'framer-motion';
-import TaskDialog from '../compoonents/TaskDialog';
+import React, { useEffect, useState } from "react";
+import { setTaskDialogOpen, setProjectFlag } from "../Redux/dataSlice";
+import { useSelector, useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { AnimatePresence, motion } from "framer-motion";
+import TaskDialog from "../compoonents/TaskDialog";
 
 const OverviewPage = ({
   addPayment,
@@ -22,9 +22,10 @@ const OverviewPage = ({
   projectDate,
   setPRojectDate,
   projects,
-  paymentData
+  paymentData,
 }) => {
-  const dueAmount = projectData.totalAmount + projectData.totalTax - projectData.paid;
+  const dueAmount =
+    projectData.totalAmount + projectData.totalTax - projectData.paid;
   const dispatch = useDispatch();
   const taskDialogOpen = useSelector((state) => state.data.taskDialogOpen);
   const navigate = useNavigate();
@@ -46,8 +47,8 @@ const OverviewPage = ({
   const [tailorreceived, setTailorReceived] = useState(0);
 
   useEffect(() => {
-    console.log(status)
-  })
+    console.log(status);
+  });
 
   useEffect(() => {
     let pendingCount = 0;
@@ -58,7 +59,7 @@ const OverviewPage = ({
     let tailorOrderedCount = 0;
     let tailorReceivedCount = 0;
 
-    goodsArray.forEach(item => {
+    goodsArray.forEach((item) => {
       switch (item.status) {
         case "Pending":
           pendingCount++;
@@ -77,7 +78,7 @@ const OverviewPage = ({
       }
     });
 
-    tailorsArray.forEach(tailor => {
+    tailorsArray.forEach((tailor) => {
       switch (tailor.status) {
         case "Pending":
           tailorPendingCount++;
@@ -110,7 +111,7 @@ const OverviewPage = ({
     console.log(paymentData);
 
     const total = paymentData
-      .filter(payment => payment[1] == projectData.projectName)
+      .filter((payment) => payment[1] == projectData.projectName)
       .reduce((sum, payment) => {
         const amount = parseFloat(payment[2]);
         return sum + (isNaN(amount) ? 0 : amount);
@@ -120,12 +121,16 @@ const OverviewPage = ({
   }, [projectData.projectName, paymentData]);
 
   return (
-    <div className="flex flex-col gap-6 p-4 sm:p-6 md:p-8 bg-gray-50 min-h-screen">
+    <div className="flex flex-col gap-6  bg-gray-50 min-h-screen">
       {/* Header Section */}
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 bg-white p-4 !rounded-xl shadow-sm">
-        <p className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-800">Project: {projectData.projectName}</p>
+        <p className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-800">
+          Project: {projectData.projectName}
+        </p>
         <div className="flex flex-wrap items-center gap-3">
-          <label className="text-sm font-medium text-gray-600">Delivery Date:</label>
+          <label className="text-sm font-medium text-gray-600">
+            Delivery Date:
+          </label>
           <input
             className="border w-38 border-gray-300 !rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
             type="date"
@@ -139,40 +144,58 @@ const OverviewPage = ({
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Client Info */}
         <div className="flex flex-col bg-white p-6 !rounded-xl shadow-sm">
-          <p className="text-lg md:text-xl font-semibold text-gray-800 mb-4">Client Information</p>
+          <p className="text-lg md:text-xl font-semibold text-gray-800 mb-4">
+            Client Information
+          </p>
           <div className="flex flex-col gap-3 text-sm">
             <div className="flex justify-between items-center">
               <p className="text-gray-500 font-medium">Name</p>
-              <p className="max-w-[60%] text-gray-800 break-words">{projectData.customerLink[0]}</p>
+              <p className="max-w-[60%] text-gray-800 break-words">
+                {projectData.customerLink[0]}
+              </p>
             </div>
             <div className="flex justify-between items-center">
               <p className="text-gray-500 font-medium">Phone</p>
-              <p className="max-w-[60%] text-gray-800 break-words">{projectData.customerLink[1]}</p>
+              <p className="max-w-[60%] text-gray-800 break-words">
+                {projectData.customerLink[1]}
+              </p>
             </div>
             <div className="flex justify-between items-center">
               <p className="text-gray-500 font-medium">Alternate Phone</p>
-              <p className="max-w-[60%] text-gray-800 break-words">{projectData.customerLink[4]}</p>
+              <p className="max-w-[60%] text-gray-800 break-words">
+                {projectData.customerLink[4]}
+              </p>
             </div>
             <div className="flex justify-between items-center">
               <p className="text-gray-500 font-medium">Email</p>
-              <p className="max-w-[60%] text-gray-800 break-words">{projectData.customerLink[2]}</p>
+              <p className="max-w-[60%] text-gray-800 break-words">
+                {projectData.customerLink[2]}
+              </p>
             </div>
             <div className="flex justify-between items-center">
               <p className="text-gray-500 font-medium">Address</p>
-              <p className="max-w-[60%] text-gray-800 break-words">{projectData.customerLink[3]}</p>
+              <p className="max-w-[60%] text-gray-800 break-words">
+                {projectData.customerLink[3]}
+              </p>
             </div>
             <div className="flex justify-between items-center">
               <p className="text-gray-500 font-medium">Additional Requests</p>
-              <p className="max-w-[60%] text-gray-800 break-words">{projectData.additionalRequests}</p>
+              <p className="max-w-[60%] text-gray-800 break-words">
+                {projectData.additionalRequests}
+              </p>
             </div>
           </div>
         </div>
 
         {/* Status */}
         <div className="flex flex-col bg-white p-6 !rounded-xl shadow-sm">
-          <p className="text-lg md:text-xl font-semibold text-gray-800 mb-4">Current Status</p>
+          <p className="text-lg md:text-xl font-semibold text-gray-800 mb-4">
+            Current Status
+          </p>
           <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-6">
-            <p className="text-sm font-medium text-gray-600">Delivery & Installation</p>
+            <p className="text-sm font-medium text-gray-600">
+              Delivery & Installation
+            </p>
             <select
               value={status}
               onChange={(e) => setStatus(e.target.value)}
@@ -188,13 +211,23 @@ const OverviewPage = ({
           </div>
           <div className="flex flex-col gap-6">
             <div className="flex flex-col gap-3">
-              <p className="text-sm font-semibold text-gray-800">Goods Ordered</p>
+              <p className="text-sm font-semibold text-gray-800">
+                Goods Ordered
+              </p>
               <div className="flex flex-col sm:flex-row sm:justify-between gap-3">
                 <div className="flex flex-wrap gap-2">
-                  <p className="text-xs font-medium text-yellow-700 bg-yellow-100 !rounded-full px-3 py-1">Pending: {pending}</p>
-                  <p className="text-xs font-medium text-blue-700 bg-blue-100 !rounded-full px-3 py-1">Ordered: {ordered}</p>
-                  <p className="text-xs font-medium text-green-700 bg-green-100 !rounded-full px-3 py-1">Received: {received}</p>
-                  <p className="text-xs font-medium text-green-700 bg-green-100 !rounded-full px-3 py-1">In Stock: {instock}</p>
+                  <p className="text-xs font-medium text-yellow-700 bg-yellow-100 !rounded-full px-3 py-1">
+                    Pending: {pending}
+                  </p>
+                  <p className="text-xs font-medium text-blue-700 bg-blue-100 !rounded-full px-3 py-1">
+                    Ordered: {ordered}
+                  </p>
+                  <p className="text-xs font-medium text-green-700 bg-green-100 !rounded-full px-3 py-1">
+                    Received: {received}
+                  </p>
+                  <p className="text-xs font-medium text-green-700 bg-green-100 !rounded-full px-3 py-1">
+                    In Stock: {instock}
+                  </p>
                 </div>
                 <button
                   onClick={() => setNavState("Goods")}
@@ -205,12 +238,20 @@ const OverviewPage = ({
               </div>
             </div>
             <div className="flex flex-col gap-3">
-              <p className="text-sm font-semibold text-gray-800">Goods Sent to Tailor</p>
+              <p className="text-sm font-semibold text-gray-800">
+                Goods Sent to Tailor
+              </p>
               <div className="flex flex-col sm:flex-row sm:justify-between gap-3">
                 <div className="flex flex-wrap gap-2">
-                  <p className="text-xs font-medium text-yellow-700 bg-yellow-100 !rounded-full px-3 py-1">Pending: {tailorpending}</p>
-                  <p className="text-xs font-medium text-blue-700 bg-blue-100 !rounded-full px-3 py-1">Ordered: {tailorordered}</p>
-                  <p className="text-xs font-medium text-green-700 bg-green-100 !rounded-full px-3 py-1">Received: {tailorreceived}</p>
+                  <p className="text-xs font-medium text-yellow-700 bg-yellow-100 !rounded-full px-3 py-1">
+                    Pending: {tailorpending}
+                  </p>
+                  <p className="text-xs font-medium text-blue-700 bg-blue-100 !rounded-full px-3 py-1">
+                    Ordered: {tailorordered}
+                  </p>
+                  <p className="text-xs font-medium text-green-700 bg-green-100 !rounded-full px-3 py-1">
+                    Received: {tailorreceived}
+                  </p>
                 </div>
                 <button
                   onClick={() => setNavState("Tailors")}
@@ -226,18 +267,23 @@ const OverviewPage = ({
         {/* Payments */}
         <div className="flex flex-col bg-white p-6 !rounded-xl shadow-sm">
           <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6">
-            <p className="text-lg md:text-xl font-semibold text-gray-800">Payments</p>
+            <p className="text-lg md:text-xl font-semibold text-gray-800">
+              Payments
+            </p>
             <div className="flex flex-wrap flex-row gap-3 mt-3 sm:mt-0">
               <button
-                onClick={() => { setNavState("Payments"); setAddPayment(true)}}
+                onClick={() => {
+                  setNavState("Payments");
+                  setAddPayment(true);
+                }}
                 className="text-white bg-blue-600 !rounded-lg px-4 py-2 text-sm font-medium hover:bg-blue-700 transition"
-                >
+              >
                 Add
               </button>
               <button
                 onClick={() => setNavState("Payments")}
                 className="text-white bg-blue-600 !rounded-lg px-4 py-2 text-sm font-medium hover:bg-blue-700 transition"
-                >
+              >
                 View
               </button>
             </div>
@@ -245,18 +291,30 @@ const OverviewPage = ({
           <div className="flex flex-col gap-3">
             <div className="flex flex-row justify-between items-center border border-gray-200 !rounded-lg p-3 bg-gray-50">
               <div className="w-1 bg-gray-500 h-6 !rounded"></div>
-              <p className="text-sm font-medium text-gray-800">Total Project Value</p>
-              <p className="text-sm font-semibold text-gray-800">{Math.round((projectData.grandTotal)).toLocaleString("en-IN")}</p>
+              <p className="text-sm font-medium text-gray-800">
+                Total Project Value
+              </p>
+              <p className="text-sm font-semibold text-gray-800">
+                {Math.round(projectData.grandTotal).toLocaleString("en-IN")}
+              </p>
             </div>
             <div className="flex flex-row justify-between items-center border border-gray-200 !rounded-lg p-3 bg-gray-50">
               <div className="w-1 bg-green-500 h-6 !rounded"></div>
-              <p className="text-sm font-medium text-gray-800">Payment Received</p>
-              <p className="text-sm font-semibold text-gray-800">{paymentReceived.toLocaleString("en-IN")}</p>
+              <p className="text-sm font-medium text-gray-800">
+                Payment Received
+              </p>
+              <p className="text-sm font-semibold text-gray-800">
+                {paymentReceived.toLocaleString("en-IN")}
+              </p>
             </div>
             <div className="flex flex-row justify-between items-center border border-gray-200 !rounded-lg p-3 bg-gray-50">
               <div className="w-1 bg-yellow-500 h-6 !rounded"></div>
               <p className="text-sm font-medium text-gray-800">Due</p>
-              <p className="text-sm font-semibold text-gray-800">{Math.round((projectData.grandTotal - paymentReceived)).toLocaleString("en-IN")}</p>
+              <p className="text-sm font-semibold text-gray-800">
+                {Math.round(
+                  projectData.grandTotal - paymentReceived
+                ).toLocaleString("en-IN")}
+              </p>
             </div>
           </div>
         </div>
@@ -267,7 +325,9 @@ const OverviewPage = ({
         {/* Tailor Info */}
         <div className="flex flex-col bg-white p-6 !rounded-xl shadow-sm">
           <div className="flex flex-wrap flex-row justify-between items-center mb-6">
-            <p className="text-lg md:text-xl font-semibold text-gray-800">Tailor Information</p>
+            <p className="text-lg md:text-xl font-semibold text-gray-800">
+              Tailor Information
+            </p>
             <button
               onClick={() => setNavState("Tailors")}
               className="text-white bg-blue-600 !rounded-lg px-4 py-2 text-sm font-medium hover:bg-blue-700 transition"
@@ -276,27 +336,43 @@ const OverviewPage = ({
             </button>
           </div>
           <div className="flex flex-col gap-3 max-h-48 overflow-y-auto">
-            {tailorsArray && tailorsArray.map((tailor, index) => (
-              <div key={index} className="flex flex-col border border-gray-200 !rounded-lg p-3 bg-gray-50">
-                <p className="text-sm font-semibold text-blue-600">{tailor.tailorData[0]}</p>
-                <p className="text-sm text-gray-600">{tailor.tailorData[1]}</p>
-              </div>
-            ))}
+            {tailorsArray &&
+              tailorsArray.map((tailor, index) => (
+                <div
+                  key={index}
+                  className="flex flex-col border border-gray-200 !rounded-lg p-3 bg-gray-50"
+                >
+                  <p className="text-sm font-semibold text-blue-600">
+                    {tailor.tailorData[0]}
+                  </p>
+                  <p className="text-sm text-gray-600">
+                    {tailor.tailorData[1]}
+                  </p>
+                </div>
+              ))}
           </div>
         </div>
 
         {/* Interior & Sales */}
         <div className="flex flex-col gap-6">
-          {[{
-            title: "Interior Information",
-            data: interiorArray
-          }, {
-            title: "Sales Associate Information",
-            data: salesAssociateArray
-          }].map((section, idx) => (
-            <div key={idx} className="flex flex-col bg-white p-6 !rounded-xl shadow-sm">
+          {[
+            {
+              title: "Interior Information",
+              data: interiorArray,
+            },
+            {
+              title: "Sales Associate Information",
+              data: salesAssociateArray,
+            },
+          ].map((section, idx) => (
+            <div
+              key={idx}
+              className="flex flex-col bg-white p-6 !rounded-xl shadow-sm"
+            >
               <div className="flex flex-wrap flex-row justify-between items-center mb-4">
-                <p className="text-lg md:text-xl font-semibold text-gray-800">{section.title}</p>
+                <p className="text-lg md:text-xl font-semibold text-gray-800">
+                  {section.title}
+                </p>
                 <button
                   onClick={() => setNavState("Customer & Project Details")}
                   className="text-white bg-blue-600 !rounded-lg px-4 py-2 text-sm font-medium hover:bg-blue-700 transition"
@@ -305,8 +381,12 @@ const OverviewPage = ({
                 </button>
               </div>
               <div className="flex flex-col sm:flex-row justify-between gap-3">
-                <p className="text-sm text-gray-800 max-w-[50%] break-words">{section.data[0]}</p>
-                <p className="text-sm text-gray-800 max-w-[50%] break-words">{section.data[2]}</p>
+                <p className="text-sm text-gray-800 max-w-[50%] break-words">
+                  {section.data[0]}
+                </p>
+                <p className="text-sm text-gray-800 max-w-[50%] break-words">
+                  {section.data[2]}
+                </p>
               </div>
             </div>
           ))}
@@ -315,7 +395,9 @@ const OverviewPage = ({
         {/* Tasks */}
         <div className="flex flex-col bg-white p-6 !rounded-xl shadow-sm">
           <div className="flex flex-wrap flex-row justify-between items-center mb-6">
-            <p className="text-lg md:text-xl font-semibold text-gray-800">Tasks</p>
+            <p className="text-lg md:text-xl font-semibold text-gray-800">
+              Tasks
+            </p>
             <button
               onClick={addNewTask}
               className="text-white bg-blue-600 !rounded-lg px-4 py-2 text-sm font-medium hover:bg-blue-700 transition"
@@ -324,31 +406,62 @@ const OverviewPage = ({
             </button>
           </div>
           <div className="flex flex-col gap-3 max-h-48 overflow-y-auto">
-            {tasks && tasks.filter(task => task[5] === projectData.projectName).map((task, index) => (
-              <div key={index} className="border border-gray-200 !rounded-lg p-3 bg-gray-50 flex flex-col gap-3">
-                <div className="flex flex-row justify-between gap-2">
-                  <p className={`text-xs font-medium text-white !rounded-full px-3 py-1 ${
-                    task[6] === "High" ? "bg-red-500" :
-                    task[6] === "Low" ? "bg-green-500" :
-                    task[6] === "Moderate" ? "bg-yellow-500" : ""
-                  }`}>{task[6]}</p>
-                  <p className={`text-xs font-medium text-white !rounded-full px-3 py-1 ${
-                    task[7] === "To Do" ? "bg-red-500" :
-                    task[7] === "Completed" ? "bg-green-500" :
-                    task[7] === "In Progress" ? "bg-yellow-500" : ""
-                  }`}>{task[7]}</p>
-                </div>
-                <p className="text-sm font-semibold text-gray-800">{task[0]}</p>
-                <p className="text-xs text-gray-600">Created At: {task[3]}</p>
-                <p className="text-xs text-gray-600">Description: {task[1]}</p>
-                <button
-                  onClick={() => { setediting(task); setDialogOpen(true); }}
-                  className="border border-blue-600 text-blue-600 !rounded-lg px-4 py-2 text-sm font-medium hover:bg-blue-50 transition w-full sm:w-32"
-                >
-                  Edit Task
-                </button>
-              </div>
-            ))}
+            {tasks &&
+              tasks
+                .filter((task) => task[5] === projectData.projectName)
+                .map((task, index) => (
+                  <div
+                    key={index}
+                    className="border border-gray-200 !rounded-lg p-3 bg-gray-50 flex flex-col gap-3"
+                  >
+                    <div className="flex flex-row justify-between gap-2">
+                      <p
+                        className={`text-xs font-medium text-white !rounded-full px-3 py-1 ${
+                          task[6] === "High"
+                            ? "bg-red-500"
+                            : task[6] === "Low"
+                            ? "bg-green-500"
+                            : task[6] === "Moderate"
+                            ? "bg-yellow-500"
+                            : ""
+                        }`}
+                      >
+                        {task[6]}
+                      </p>
+                      <p
+                        className={`text-xs font-medium text-white !rounded-full px-3 py-1 ${
+                          task[7] === "To Do"
+                            ? "bg-red-500"
+                            : task[7] === "Completed"
+                            ? "bg-green-500"
+                            : task[7] === "In Progress"
+                            ? "bg-yellow-500"
+                            : ""
+                        }`}
+                      >
+                        {task[7]}
+                      </p>
+                    </div>
+                    <p className="text-sm font-semibold text-gray-800">
+                      {task[0]}
+                    </p>
+                    <p className="text-xs text-gray-600">
+                      Created At: {task[3]}
+                    </p>
+                    <p className="text-xs text-gray-600">
+                      Description: {task[1]}
+                    </p>
+                    <button
+                      onClick={() => {
+                        setediting(task);
+                        setDialogOpen(true);
+                      }}
+                      className="border border-blue-600 text-blue-600 !rounded-lg px-4 py-2 text-sm font-medium hover:bg-blue-50 transition w-full sm:w-32"
+                    >
+                      Edit Task
+                    </button>
+                  </div>
+                ))}
           </div>
         </div>
       </div>

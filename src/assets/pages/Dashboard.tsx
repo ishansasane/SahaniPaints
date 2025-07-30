@@ -690,7 +690,7 @@ const Dashboard: React.FC = () => {
   };
 
   return (
-    <div className="p-6 md:mt-0 mt-20 bg-gray-100 min-h-screen">
+    <div className="md:p-0 md:mt-0 mt-20 bg-gray-100 min-h-screen">
       <div
         className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2 ${
           flag ? "hidden" : ""
@@ -732,7 +732,7 @@ const Dashboard: React.FC = () => {
           flag ? "hidden" : ""
         } grid grid-cols-1 lg:grid-cols-3 gap-2 mt-2`}
       >
-        <div className="bg-white shadow-md !rounded-xl p-6">
+        <div className="bg-white shadow-md !rounded-xl p-6 md: p-3">
           <p
             style={{ fontFamily: "Poppins, sans-serif" }}
             className="md:text-[1.7vw] font-semibold mb-4 text-gray-800"
