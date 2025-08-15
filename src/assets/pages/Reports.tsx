@@ -147,31 +147,11 @@ function Reports() {
   useEffect(() => {
     const fetchAndSetTasks = async () => {
       try {
-        const cached = localStorage.getItem("taskData");
-        const now = Date.now();
 
-        if (cached) {
-          const parsed = JSON.parse(cached);
-          const timeDiff = now - parsed.time;
-
-          if (timeDiff < 5 * 60 * 1000 && parsed.data.length > 0) {
-            const sortedTasks = parsed.data.sort(
-              (a, b) => new Date(a[2]).getTime() - new Date(b[2]).getTime()
-            );
-            dispatch(setTasks(sortedTasks));
-            return;
-          }
+        if (taskData.length == 0) {
+          const data = await fetchTaskData();
+          dispatch(setTasks(sorted));
         }
-
-        const data = await fetchTaskData();
-        const sorted = data.sort(
-          (a, b) => new Date(a[2]).getTime() - new Date(b[2]).getTime()
-        );
-        dispatch(setTasks(sorted));
-        localStorage.setItem(
-          "taskData",
-          JSON.stringify({ data: sorted, time: now })
-        );
       } catch (error) {
         console.error("Failed to fetch tasks:", error);
       }
@@ -184,53 +164,31 @@ function Reports() {
 
   useEffect(() => {
     const fetchData = async () => {
-      const now = Date.now();
 
-      // ---------- Handle Project Data ----------
-      const cachedProjects = localStorage.getItem("projectData");
-      let projects = [];
-
-      if (cachedProjects) {
-        const parsed = JSON.parse(cachedProjects);
-        const timeDiff = now - parsed.time;
-
-        if (timeDiff < 5 * 60 * 1000 && parsed.data.length > 0) {
-          dispatch(setProjects(parsed.data));
-          setProjectsData(parsed.data);
-          projects = parsed.data;
-        } else {
-          projects = await fetchProjectData();
-          dispatch(setProjects(projects));
-          setProjectsData(projects);
-          localStorage.setItem(
-            "projectData",
-            JSON.stringify({ data: projects, time: now })
-          );
-        }
+      if (projectData.length != 0) {
+          setProjectsData(projectData);
       } else {
-        projects = await fetchProjectData();
-        dispatch(setProjects(projects));
-        setProjectsData(projects);
-        localStorage.setItem(
-          "projectData",
-          JSON.stringify({ data: projects, time: now })
-        );
+          const data = await fetchProjectData();
+          dispatch(setProjects(data));
+          setProjectsData(data);
       }
 
       // ---------- Handle Payments ----------
       try {
-        const paymentRes = await fetchWithLoading(
-          "https://sheeladecor.netlify.app/.netlify/functions/server/getPaintsPayments",
-          {
-            credentials: "include",
-          }
-        );
 
-        if (paymentRes.ok) {
+        if(paymentsData.length == 0){
+          const paymentRes = await fetchWithLoading(
+            "https://sheeladecor.netlify.app/.netlify/functions/server/getPaintsPayments",
+            {
+              credentials: "include",
+            }
+          );
           const paymentData = await paymentRes.json();
-          if (paymentData.success === "true") {
-            dispatch(setPaymentData(paymentData.message));
-            setPayments(paymentData.message);
+          dispatch(setPaymentData(paymentData.message));
+          setPayments(paymentData.message);
+        }else{
+          setPayments(paymentsData);
+        }
 
             // Group payments by project name
             const paymentSums = projects.map((project) => {
@@ -245,10 +203,6 @@ function Reports() {
             });
 
             setProjectPayments(paymentSums);
-          }
-        } else {
-          console.error("Failed to fetch payment data:", paymentRes.status);
-        }
       } catch (error) {
         console.error("Error fetching payments:", error);
       }
