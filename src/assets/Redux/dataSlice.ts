@@ -21,6 +21,9 @@ interface DataState {
   bankData: any[];
   termsData: any[];
   loading: boolean; // <-- Added loading state
+  labours : any[];
+  labourAttendance : any[];
+  newLabourAttendance : any[];
 }
 
 const initialState: DataState = {
@@ -44,6 +47,9 @@ const initialState: DataState = {
   bankData: [],
   termsData: [],
   loading: false, // <-- Initialized loading state
+  labours : [],
+  labourAttendance : [],
+  newLabourAttendance : []
 };
 
 const dataSlice = createSlice({
@@ -110,6 +116,15 @@ const dataSlice = createSlice({
     setLoading: (state, action: PayloadAction<boolean>) => {
       state.loading = action.payload;
     },
+    setLabourAttendanceData: (state, action: PayloadAction<any[]>) => {
+      state.labourAttendance = action.payload;
+    },
+    setNewLabourAttendanceData: (state, action: PayloadAction<any[]>) => {
+      state.newLabourAttendance = action.payload;
+    },
+    setLabourData: (state, action: PayloadAction<any[]>) => {
+      state.labours = action.payload;
+    },
   },
 });
 
@@ -134,6 +149,9 @@ export const {
   setBankData,
   setTermsData,
   setLoading, // <-- Export this too
+  setLabourAttendanceData,
+  setLabourData,
+  setNewLabourAttendanceData
 } = dataSlice.actions;
 
 export default dataSlice.reducer;

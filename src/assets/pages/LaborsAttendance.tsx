@@ -1,8 +1,17 @@
 import React, { useState, useEffect } from "react";
 import { fetchWithLoading } from "../Redux/fetchWithLoading";
 import Select from "react-select";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../Redux/store";
+import { setLabourAttendanceData, setLabourData, setProjects } from "../Redux/dataSlice";
 
 function LaborsAttendance() {
+
+  const dispatch = useDispatch();
+  const labours = useSelector((state : RootState) => state.data.labours);
+  const labourAttendanceData = useSelector((state : RootState) => state.data.labourAttendance);
+  const projects = useSelector((state : RootState) => state.data.projects);
+
   const [sites, setSites] = useState([]);
   const [selectedSite, setSelectedSite] = useState("");
   const [selectedDate, setSelectedDate] = useState(
@@ -75,20 +84,27 @@ function LaborsAttendance() {
 
   // Fetch sites data
   useEffect(() => {
-    fetchWithLoading(
+    if(projects.length == 0){
+          fetchWithLoading(
       "https://sheeladecor.netlify.app/.netlify/functions/server/getpaintsprojectdata"
     )
       .then((res) => res.json())
       .then((data) => {
         const siteNames = data.body.map((item) => item[0]);
         setSites(siteNames);
+        dispatch(setProjects(data.body));
       })
       .catch((error) => console.error("Error fetching site data:", error));
+    }else{
+      const siteNames = projects.map((item) => item[0]);
+      setSites(siteNames);
+    }
   }, []);
 
   // Fetch available labors
   useEffect(() => {
-    fetchWithLoading(
+    if(labours.length == 0){
+          fetchWithLoading(
       "https://sheeladecor.netlify.app/.netlify/functions/server/getPaintsLabourData"
     )
       .then((res) => res.json())
@@ -97,13 +113,18 @@ function LaborsAttendance() {
           new Set(data.body.map((item) => item[0]))
         );
         setAvailableLabors(uniqueLabors);
+        dispatch(setLabourData(uniqueLabors));
       })
       .catch((error) => console.error("Error fetching labor data:", error));
+    }else{
+      setAvailableLabors(labours);
+    }
   }, []);
 
   // Fetch all attendance data
   const fetchAttendanceData = () => {
-    fetchWithLoading(
+    if(labourAttendanceData.length == 0){
+          fetchWithLoading(
       "https://sheeladecor.netlify.app/.netlify/functions/server/getLabourData"
     )
       .then((res) => res.json())
@@ -115,11 +136,15 @@ function LaborsAttendance() {
             labors: parseLaborData(item[2]),
           }));
           setAttendanceData(formattedData);
+          dispatch(setLabourAttendanceData(formattedData));
         }
       })
       .catch((error) =>
         console.error("Error fetching attendance data:", error)
       );
+    }else{
+      setAttendanceData(labourAttendanceData);
+    }
   };
 
   // Load attendance data on component mount
@@ -219,7 +244,21 @@ function LaborsAttendance() {
             alert(
               `Attendance ${isEditing ? "updated" : "saved"} successfully!`
             );
-            fetchAttendanceData(); // Refresh attendance data
+            fetchWithLoading(
+              "https://sheeladecor.netlify.app/.netlify/functions/server/getLabourData"
+            )
+            .then((res) => res.json())
+            .then((data) => {
+              if (data.success) {
+                const formattedData = data.body.map((item) => ({
+                  date: item[0],
+                  site: item[1],
+                  labors: parseLaborData(item[2]),
+                }));
+                setAttendanceData(formattedData);
+                dispatch(setLabourAttendanceData(formattedData));
+              }
+            })
           } else {
             throw new Error(
               data.message ||
@@ -267,7 +306,21 @@ function LaborsAttendance() {
               alert("Attendance deleted successfully!");
               setLaborNames([]);
               setIsEditing(false);
-              fetchAttendanceData(); // Refresh attendance data
+              fetchWithLoading(
+                "https://sheeladecor.netlify.app/.netlify/functions/server/getLabourData"
+              )
+                .then((res) => res.json())
+                .then((data) => {
+                  if (data.success) {
+                    const formattedData = data.body.map((item) => ({
+                      date: item[0],
+                      site: item[1],
+                      labors: parseLaborData(item[2]),
+                    }));
+                    setAttendanceData(formattedData);
+                    dispatch(setLabourAttendanceData(formattedData));
+                  }
+                })
             } else {
               throw new Error(data.message || "Failed to delete attendance");
             }

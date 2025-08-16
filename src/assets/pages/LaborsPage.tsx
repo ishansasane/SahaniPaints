@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { fetchWithLoading } from "../Redux/fetchWithLoading";
 import dayjs from "dayjs";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../Redux/store";
+import { setLabourData, setNewLabourAttendanceData } from "../Redux/dataSlice";
 
 interface AttendanceEntry {
   date: string;
@@ -54,9 +57,14 @@ function LaborsPage() {
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [laborToDelete, setLaborToDelete] = useState<string | null>(null);
 
+  const dispatch = useDispatch();
+  const labours = useSelector((state : RootState) => state.data.labours);
+  const labourAttendance = useSelector((state : RootState) => state.data.newLabourAttendance);
+
   const fetchLabors = () => {
     setLoading(true);
-    fetchWithLoading(
+    if(labours.length == 0){
+          fetchWithLoading(
       "https://sheeladecor.netlify.app/.netlify/functions/server/getPaintsLabourData"
     )
       .then((res) => res.json())
@@ -64,42 +72,53 @@ function LaborsPage() {
         if (data.success) {
           setLabors(data.body);
           setFilteredLabors(data.body);
+          dispatch(setLabourData(data.body));
         }
       })
       .catch((err) => console.error("Failed to fetch labors:", err))
       .finally(() => setLoading(false));
+    }else{
+      setLabors(labours);
+      setFilteredLabors(labours);
+      setLoading(false);
+    }
   };
 
   const fetchAttendance = async () => {
-    try {
-      const res = await fetchWithLoading(
-        "https://sheeladecor.netlify.app/.netlify/functions/server/getLabourData"
-      );
-      const data = await res.json();
-
-      if (data.success && Array.isArray(data.body)) {
-        const parsed: AttendanceEntry[] = data.body.map(
-          ([date, site, rawEntries]: any) => {
-            const records: AttendanceEntry["records"] = rawEntries
-              .split("],[")
-              .map((s: string) => s.replace(/[\[\]"]/g, ""))
-              .map((entry: string) => {
-                const [name, day, night] = entry.split(",");
-                return {
-                  name: name.trim(),
-                  day: day === "P",
-                  night: night === "P",
-                };
-              });
-
-            return { date, site, records };
-          }
+    if(labourAttendance.length == 0){
+      try {
+        const res = await fetchWithLoading(
+          "https://sheeladecor.netlify.app/.netlify/functions/server/getLabourData"
         );
+        const data = await res.json();
 
-        setAttendanceData(parsed);
+        if (data.success && Array.isArray(data.body)) {
+          const parsed: AttendanceEntry[] = data.body.map(
+            ([date, site, rawEntries]: any) => {
+              const records: AttendanceEntry["records"] = rawEntries
+                .split("],[")
+                .map((s: string) => s.replace(/[\[\]"]/g, ""))
+                .map((entry: string) => {
+                  const [name, day, night] = entry.split(",");
+                  return {
+                    name: name.trim(),
+                    day: day === "P",
+                    night: night === "P",
+                  };
+                });
+
+              return { date, site, records };
+            }
+          );
+
+          setAttendanceData(parsed);
+          dispatch(setNewLabourAttendanceData(parsed));
+        }
+      } catch (err) {
+        console.error("Failed to fetch attendance:", err);
       }
-    } catch (err) {
-      console.error("Failed to fetch attendance:", err);
+    }else{
+      setAttendanceData(attendanceData);
     }
   };
 
@@ -140,7 +159,18 @@ function LaborsPage() {
           alert("Labor added successfully!");
           setName("");
           setPayment("");
-          fetchLabors();
+          fetchWithLoading(
+            "https://sheeladecor.netlify.app/.netlify/functions/server/getPaintsLabourData"
+          )
+            .then((res) => res.json())
+            .then((data) => {
+              if (data.success) {
+                setLabors(data.body);
+                setFilteredLabors(data.body);
+                dispatch(setLabourData(data.body));
+              }
+            })
+            .catch((err) => console.error("Failed to fetch labors:", err))
           setAddDialogOpen(false);
         } else {
           alert("Failed to add labor.");
@@ -149,6 +179,7 @@ function LaborsPage() {
       .catch((err) => {
         console.error("POST error:", err);
         alert("Something went wrong");
+        
       });
   };
 
@@ -170,7 +201,18 @@ function LaborsPage() {
       .then((res) => {
         if (res.success) {
           alert("Labor payment updated successfully!");
-          fetchLabors();
+          fetchWithLoading(
+            "https://sheeladecor.netlify.app/.netlify/functions/server/getPaintsLabourData"
+          )
+            .then((res) => res.json())
+            .then((data) => {
+              if (data.success) {
+                setLabors(data.body);
+                setFilteredLabors(data.body);
+                dispatch(setLabourData(data.body));
+              }
+            })
+            .catch((err) => console.error("Failed to fetch labors:", err))
           setEditDialogOpen(false);
         } else {
           alert("Failed to update labor payment.");
@@ -197,7 +239,18 @@ function LaborsPage() {
       .then((res) => {
         if (res.success) {
           alert("Labor deleted successfully!");
-          fetchLabors();
+        fetchWithLoading(
+          "https://sheeladecor.netlify.app/.netlify/functions/server/getPaintsLabourData"
+        )
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.success) {
+            setLabors(data.body);
+            setFilteredLabors(data.body);
+            dispatch(setLabourData(data.body));
+          }
+        })
+        .catch((err) => console.error("Failed to fetch labors:", err))
           setDeleteConfirmOpen(false);
           setLaborToDelete(null);
         } else {
