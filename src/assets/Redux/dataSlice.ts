@@ -24,6 +24,7 @@ interface DataState {
   labours : any[];
   labourAttendance : any[];
   newLabourAttendance : any[];
+  colorData : any[];
 }
 
 const initialState: DataState = {
@@ -49,7 +50,8 @@ const initialState: DataState = {
   loading: false, // <-- Initialized loading state
   labours : [],
   labourAttendance : [],
-  newLabourAttendance : []
+  newLabourAttendance : [],
+  colorData : [],
 };
 
 const dataSlice = createSlice({
@@ -125,6 +127,9 @@ const dataSlice = createSlice({
     setLabourData: (state, action: PayloadAction<any[]>) => {
       state.labours = action.payload;
     },
+    setColorData: (state, action: PayloadAction<any[]>) => {
+      state.colorData = action.payload;
+    },
   },
 });
 
@@ -151,7 +156,8 @@ export const {
   setLoading, // <-- Export this too
   setLabourAttendanceData,
   setLabourData,
-  setNewLabourAttendanceData
+  setNewLabourAttendanceData,
+  setColorData
 } = dataSlice.actions;
 
 export default dataSlice.reducer;

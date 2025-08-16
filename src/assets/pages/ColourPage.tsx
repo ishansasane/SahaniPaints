@@ -1,6 +1,10 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo, useDebugValue } from "react";
 import { fetchWithLoading } from "../Redux/fetchWithLoading";
 import { Pencil, Trash, Search } from "lucide-react";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../Redux/store";
+import { setColorData, setProjects } from "../Redux/dataSlice";
+import { color } from "framer-motion";
 
 // ✅ Helper to check permission
 const hasPermission = (route: string): boolean => {
@@ -28,20 +32,29 @@ function ColourPage() {
   const [editMode, setEditMode] = useState(false);
   const [editTarget, setEditTarget] = useState({ site: "", date: "" });
   const [searchTerm, setSearchTerm] = useState("");
-
   const canEdit = hasPermission("/edit-colour"); // ✅ Check once
 
+  const dispatch = useDispatch();
+  const projects = useSelector((state : RootState) => state.data.projects);
+  const colorData = useSelector((state : RootState) => state.data.colorData);
+
   useEffect(() => {
-    fetchWithLoading(
-      "https://sheeladecor.netlify.app/.netlify/functions/server/getpaintsprojectdata"
-    )
+    if(projects.length == 0){
+      fetchWithLoading(
+        "https://sheeladecor.netlify.app/.netlify/functions/server/getpaintsprojectdata"
+      )
       .then((res) => res.json())
       .then((data) => {
         const siteNames = data.body.map((item) => item[0]);
         setSites(siteNames);
+        dispatch(setProjects(data.body));
       });
-
-    fetchWithLoading(
+    }else{
+      const siteNames = projects.map((item) => item[0]);
+      setSites(siteNames);
+    }
+    if(colorData.length == 0){
+          fetchWithLoading(
       "https://sheeladecor.netlify.app/.netlify/functions/server/getPaintsColorData"
     )
       .then((res) => res.json())
@@ -66,7 +79,30 @@ function ColourPage() {
           }
         });
         setTableData(parsed);
+        dispatch(setColorData(data.body));
       });
+    }else{
+      const parsed = [];
+          colorData.forEach(([siteName, areaCollection, date]) => {
+          const matches = areaCollection.match(/\[([^\]]+)\]/g);
+          if (matches) {
+            matches.forEach((block) => {
+              const parts = block
+                .replace(/[\[\]]/g, "")
+                .split(",")
+                .map((p) => p.trim());
+              parsed.push({
+                site: siteName,
+                area: parts[0] || "",
+                shadeName: parts[1] || "NA",
+                shadeCode: parts[2] || "",
+                date,
+              });
+            });
+          }
+        });
+      setTableData(parsed);
+    }
   }, []);
 
   const filteredData = useMemo(() => {
