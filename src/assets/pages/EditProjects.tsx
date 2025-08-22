@@ -1429,11 +1429,10 @@ const EditProjects = ({
         const cachedPayments = paymentData;
 
         if (cachedPayments.length > 0) {
-          setPayment(paymentData);
+           return;
         } else {
           const fresh = await fetchPaymentData();
           dispatch(setPaymentData(fresh));
-          setPayment(fresh);
         }
         const totalReceived = paymentData.reduce((sum, record) => {
           if (record[1] === projectData.projectName) {

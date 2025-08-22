@@ -96,7 +96,7 @@ function LaborsAttendance() {
       })
       .catch((error) => console.error("Error fetching site data:", error));
     }else{
-      const siteNames = projects.map((item) => item[0]);
+      const siteNames = projects.map((item) => item.projectName);
       setSites(siteNames);
     }
   }, []);
@@ -109,11 +109,8 @@ function LaborsAttendance() {
     )
       .then((res) => res.json())
       .then((data) => {
-        const uniqueLabors = Array.from(
-          new Set(data.body.map((item) => item[0]))
-        );
-        setAvailableLabors(uniqueLabors);
-        dispatch(setLabourData(uniqueLabors));
+        setAvailableLabors(data.body);
+        dispatch(setLabourData(data.body));
       })
       .catch((error) => console.error("Error fetching labor data:", error));
     }else{
@@ -457,7 +454,7 @@ function LaborsAttendance() {
           <div className="flex flex-col sm:flex-row gap-2 mb-6">
             <Select
               options={availableLabors.map((labor) => ({
-                label: labor,
+                label: labor[0],
                 value: labor,
               }))}
               value={
@@ -465,7 +462,7 @@ function LaborsAttendance() {
                   ? { label: newLaborName, value: newLaborName }
                   : null
               }
-              onChange={(selected) => setNewLaborName(selected?.value || "")}
+              onChange={(selected) => setNewLaborName(selected?.value[0] || "")}
               placeholder="Select Labor"
               isClearable
               className="flex-1 text-sm md:text-base"
@@ -480,7 +477,7 @@ function LaborsAttendance() {
             />
             <button
               onClick={addLabor}
-              disabled={!newLaborName.trim()}
+              disabled={!newLaborName[0]}
               className="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 disabled:bg-gray-400 text-sm md:text-base"
             >
               Add Labor

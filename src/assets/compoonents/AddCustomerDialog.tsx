@@ -45,12 +45,12 @@ const AddCustomerDialog: React.FC<AddCustomerDialogProps> = ({
 }) => {
   const navigate = useNavigate();
   const [name, setName] = useState(editing ? editing[0] : "");
-  const [mobile, setMobile] = useState(editing ? editing[1] : null);
-  const [address, setAddress] = useState(editing ? editing[3] : null);
+  const [mobile, setMobile] = useState(editing ? editing[1] : "");
+  const [address, setAddress] = useState(editing ? editing[3] : "");
   const [alternateNumber, setAlternateNumber] = useState(
-    editing ? editing[4] : null
+    editing ? editing[4] : ""
   );
-  const [email, setEmail] = useState(editing ? editing[2] : null);
+  const [email, setEmail] = useState(editing ? editing[2] : "");
 
   const dispatch = useDispatch();
   const customerData = useSelector((state: RootState) => state.data.customers);
