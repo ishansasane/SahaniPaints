@@ -85,6 +85,7 @@ function LaborsPage() {
   };
 
   const fetchAttendance = async () => {
+    console.log(labourAttendance);
     if(labourAttendance.length == 0){
       try {
         const res = await fetchWithLoading(
@@ -118,7 +119,7 @@ function LaborsPage() {
         console.error("Failed to fetch attendance:", err);
       }
     }else{
-      setAttendanceData(attendanceData);
+      setAttendanceData(labourAttendance);
     }
   };
 
@@ -304,7 +305,7 @@ function LaborsPage() {
   );
 
   const getLaborPayment = (laborName: string): number => {
-    const entry = labors.find(([name]) => name === laborName);
+    const entry = labors.find((name) => name[0] == laborName);
     const payStr = entry?.[2];
     return payStr ? parseFloat(payStr) : 0;
   };
@@ -313,7 +314,6 @@ function LaborsPage() {
     if (!selectedLabor) return 0;
     const pay = getLaborPayment(selectedLabor);
     let total = 0;
-
     filteredAttendance.forEach((entry) => {
       const record = entry.records.find((r) => r.name === selectedLabor);
       if (record) {

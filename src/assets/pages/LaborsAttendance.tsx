@@ -3,7 +3,7 @@ import { fetchWithLoading } from "../Redux/fetchWithLoading";
 import Select from "react-select";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../Redux/store";
-import { setLabourAttendanceData, setLabourData, setProjects } from "../Redux/dataSlice";
+import { setLabourAttendanceData, setLabourData, setNewLabourAttendanceData, setProjects } from "../Redux/dataSlice";
 
 function LaborsAttendance() {
 
@@ -84,6 +84,7 @@ function LaborsAttendance() {
 
   // Fetch sites data
   useEffect(() => {
+    console.log(projects);
     if(projects.length == 0){
           fetchWithLoading(
       "https://sheeladecor.netlify.app/.netlify/functions/server/getpaintsprojectdata"
@@ -96,7 +97,8 @@ function LaborsAttendance() {
       })
       .catch((error) => console.error("Error fetching site data:", error));
     }else{
-      const siteNames = projects.map((item) => item.projectName);
+      const siteNames = projects.map((item) => item[0] == undefined ? item.projectName : item[0]);
+      console.log(siteNames);
       setSites(siteNames);
     }
   }, []);
@@ -134,6 +136,24 @@ function LaborsAttendance() {
           }));
           setAttendanceData(formattedData);
           dispatch(setLabourAttendanceData(formattedData));
+          const parsed = data.body.map(
+            ([date, site, rawEntries]) => {
+              const records = rawEntries
+                .split("],[")
+                .map((s: string) => s.replace(/[\[\]"]/g, ""))
+                .map((entry: string) => {
+                  const [name, day, night] = entry.split(",");
+                  return {
+                    name: name.trim(),
+                    day: day === "P",
+                    night: night === "P",
+                  };
+                });
+
+              return { date, site, records };
+            }
+          );
+          dispatch(setNewLabourAttendanceData(parsed));
         }
       })
       .catch((error) =>
@@ -254,6 +274,24 @@ function LaborsAttendance() {
                 }));
                 setAttendanceData(formattedData);
                 dispatch(setLabourAttendanceData(formattedData));
+            const parsed = data.body.map(
+            ([date, site, rawEntries]) => {
+              const records = rawEntries
+                .split("],[")
+                .map((s: string) => s.replace(/[\[\]"]/g, ""))
+                .map((entry: string) => {
+                  const [name, day, night] = entry.split(",");
+                  return {
+                    name: name.trim(),
+                    day: day === "P",
+                    night: night === "P",
+                  };
+                });
+
+              return { date, site, records };
+            }
+          );
+          dispatch(setNewLabourAttendanceData(parsed));
               }
             })
           } else {
