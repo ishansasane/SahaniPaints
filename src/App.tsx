@@ -51,13 +51,12 @@ import ProtectedRoute from "./auth/ProtectedRoute.tsx";
 import TokenHandler from "./auth/TokenHandler.tsx";
 import BankDetails from "./assets/pages/BankDetails.tsx";
 import TermsAndConditions from "./assets/pages/TermsAndConditions.tsx";
-import addSitePage from "./assets/pages/addSitePage.tsx";
+import AddSitePage from "./assets/pages/AddSitePage.tsx";
 
 // 🔽 NEW: Redux for loading state
 import { useSelector } from "react-redux";
-import { RootState } from "./Redux/Store";
+import { RootState } from "./assets/Redux/store.ts";
 import LaborsAttendance from "./assets/pages/LaborsAttendance.tsx";
-import AddSitePage from "./assets/pages/addSitePage.tsx";
 import LaborsPage from "./assets/pages/LaborsPage.tsx";
 
 function App() {
