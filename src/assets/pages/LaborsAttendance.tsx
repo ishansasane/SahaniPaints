@@ -354,6 +354,24 @@ function LaborsAttendance() {
                     }));
                     setAttendanceData(formattedData);
                     dispatch(setLabourAttendanceData(formattedData));
+          const parsed = data.body.map(
+            ([date, site, rawEntries]) => {
+              const records = rawEntries
+                .split("],[")
+                .map((s: string) => s.replace(/[\[\]"]/g, ""))
+                .map((entry: string) => {
+                  const [name, day, night] = entry.split(",");
+                  return {
+                    name: name.trim(),
+                    day: day === "P",
+                    night: night === "P",
+                  };
+                });
+
+              return { date, site, records };
+            }
+          );
+            dispatch(setNewLabourAttendanceData(parsed));
                   }
                 })
             } else {
