@@ -1660,10 +1660,6 @@ function AddProjectForm() {
         alert("Project Added");
         const updatedData = await fetchProjectData();
         dispatch(setProjects(updatedData));
-        localStorage.setItem(
-          "projectData",
-          JSON.stringify({ data: updatedData, time: Date.now() })
-        );
       } else {
         const errorText = await response.text();
         console.error("Error response:", errorText);

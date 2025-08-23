@@ -30,7 +30,7 @@ async function fetchCustomers() {
     }
 
     const data = await response.json();
-    return Array.isArray(data.body) ? data.body : [];
+    return data.body || [];
   } catch (error) {
     console.error("Error fetching customer data:", error);
     return [];
@@ -87,17 +87,14 @@ const AddCustomerDialog: React.FC<AddCustomerDialogProps> = ({
         address: safeAddress,
         alternatenumber: safeAlternate,
         addedDate: date,
+        companyName : "NA",
+        GST : "NA"
       }),
     });
 
     if (response.status === 200) {
       const data = await fetchCustomers();
       dispatch(setCustomerData(data));
-      localStorage.setItem(
-        "customerData",
-        JSON.stringify({ data, time: Date.now() })
-      );
-
       setName("");
       setAddress("");
       setMobile("");

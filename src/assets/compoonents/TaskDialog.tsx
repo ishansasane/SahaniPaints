@@ -238,7 +238,7 @@ const TaskDialog = forwardRef<{ submit: () => void }, TaskDialogProps>(
                 Due Date & Time <span className="text-red-500">*</span>
               </label>
               <input
-                type="datetime-local"
+                type="date"
                 value={dateTime}
                 onChange={(e) => setDateTime(e.target.value)}
                 className="w-full border p-1.5 sm:p-2 rounded text-xs sm:text-sm"

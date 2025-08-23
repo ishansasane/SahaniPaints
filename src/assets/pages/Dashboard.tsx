@@ -242,7 +242,7 @@ const Dashboard: React.FC = () => {
     };
 
     fetchTasks();
-  }, [dispatch, taskDialogOpen, refresh]);
+  }, [dispatch, taskDialogOpen, refresh, tasks]);
 
   const fetchProjectData = async () => {
     try {
@@ -425,7 +425,7 @@ const Dashboard: React.FC = () => {
     };
 
     fetchData();
-  }, [dispatch]);
+  }, [dispatch, paymentData, projectsData]);
 
   const handleMarkAsCompleted = async (status, name) => {
     try {

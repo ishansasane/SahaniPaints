@@ -98,7 +98,7 @@ export default function Customers() {
         }
     fetchData();
 
-  }, [dispatch]);
+  }, [dispatch, isDialogOpen]);
 
   // Filter customers based on search term
   const filteredCustomers = customers.filter((customer) =>

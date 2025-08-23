@@ -163,7 +163,7 @@ export default function Projects() {
       discountType: row[20],
       bankDetails: deepClone(parseSafely(row[21], [])),
       termsConditions: deepClone(parseSafely(row[22], [])),
-      defaulter: deepClone(row[23]),
+      defaulter: row[23] || "FALSE",
     }));
 
     return projects;
@@ -191,11 +191,13 @@ export default function Projects() {
           if (Array.isArray(freshProjects)) {
             projectsToUse = freshProjects;
             dispatch(setProjects(freshProjects));
+            setprojects(freshProjects);
           } else {
             projectsToUse = [];
           }
         } else {
           projectsToUse = projectData;
+          setprojects(projectData);
         }
 
         // --- Step 2: Build valid project names ---
@@ -262,7 +264,6 @@ export default function Projects() {
         // Step 3: Fetch from API
         const data = await fetchTaskData();
         dispatch(setTasks(data));
-        localStorage.setItem("tasks", JSON.stringify(data));
         setTaskData(data);
         setDeleted(false); // reset deleted after refreshing
       } catch (error) {
