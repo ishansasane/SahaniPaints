@@ -64,27 +64,133 @@ function ColourPage() {
         dispatch(setColorData(data.body));
   }
 
-  useEffect(() => {
-    if(projects.length == 0){
-      fetchWithLoading(
-        "https://sheeladecor.netlify.app/.netlify/functions/server/getpaintsprojectdata"
-      )
-      .then((res) => res.json())
-      .then((data) => {
-        const siteNames = data.body.map((item) => item[0] == undefined ? item.projectName : item[0]);
+    const fetchProjectData = async () => {
+    try {
+      const response = await fetchWithLoading(
+        "https://sheeladecor.netlify.app/.netlify/functions/server/getpaintsprojectdata",
+        {
+          credentials: "include",
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      if (!Array.isArray(data.body)) {
+        throw new Error("Invalid data format: Expected an array in data.body");
+      }
+
+      const parseSafely = (value: any, fallback: any) => {
+        if (value == null || value === "") return fallback;
+        if (typeof value !== "string") return value || fallback;
+        try {
+          return JSON.parse(value);
+        } catch (error) {
+          console.warn("Invalid JSON:", value, error);
+          return fallback;
+        }
+      };
+
+      const deepClone = (obj: any) => {
+        try {
+          return JSON.parse(JSON.stringify(obj));
+        } catch {
+          return [];
+        }
+      };
+
+      const fixBrokenArray = (input: any): string[] => {
+        if (Array.isArray(input)) return input;
+        if (typeof input !== "string" || input === "") return [];
+
+        try {
+          const fixed = JSON.parse(input);
+          if (Array.isArray(fixed)) return fixed;
+          return [];
+        } catch {
+          try {
+            const cleaned = input
+              .replace(/^\[|\]$/g, "")
+              .split(",")
+              .map((item: string) => item.trim().replace(/^"+|"+$/g, ""));
+            return cleaned.filter((item) => item);
+          } catch {
+            return [];
+          }
+        }
+      };
+
+      const projects = data.body
+        .map((row: any[], rowIndex: number) => {
+          try {
+            return {
+              projectName: row[0] || "",
+              customerLink: parseSafely(row[1], []),
+              projectReference: row[2] || "",
+              status: row[3] || "",
+              totalAmount: parseFloat(row[4]) || 0,
+              totalTax: parseFloat(row[5]) || 0,
+              paid: parseFloat(row[6]) || 0,
+              discount: parseFloat(row[7]) || 0,
+              createdBy: row[8] || "",
+              allData: deepClone(parseSafely(row[9], [])),
+              projectDate: row[10] || "",
+              additionalRequests: parseSafely(row[11], []),
+              interiorArray: fixBrokenArray(row[12]),
+              salesAssociateArray: fixBrokenArray(row[13]),
+              additionalItems: deepClone(parseSafely(row[14], [])),
+              goodsArray: deepClone(parseSafely(row[15], [])),
+              tailorsArray: deepClone(parseSafely(row[16], [])),
+              projectAddress: row[17] || "",
+              date: row[18] || "",
+              grandTotal: row[19],
+              discountType: row[20],
+              bankDetails: deepClone(parseSafely(row[21], [])),
+              termsConditions: deepClone(parseSafely(row[22], [])),
+              defaulter: deepClone(row[23]),
+            };
+          } catch (error) {
+            console.error(
+              `Error processing project row ${rowIndex}:`,
+              row,
+              error
+            );
+            return null;
+          }
+        })
+        .filter((project) => project !== null);
+
+      return projects;
+    } catch (error) {
+      console.error("Error fetching project data:", error);
+      return [];
+    }
+  };
+
+useEffect(() => {
+  const fetchData = async () => {
+    try {
+      if (projects.length === 0) {
+        const data = await fetchProjectData();
+        const siteNames = data.map((item) =>
+          item[0] === undefined ? item.projectName : item[0]
+        );
         setSites(siteNames);
         dispatch(setProjects(data.body));
-      });
-    }else{
-      const siteNames = projects.map((item) => item[0]);
-      setSites(siteNames);
-    }
-    if(colorData.length == 0){
-          fetchWithLoading(
-      "https://sheeladecor.netlify.app/.netlify/functions/server/getPaintsColorData"
-    )
-      .then((res) => res.json())
-      .then((data) => {
+      } else {
+        const siteNames = projects.map((item) => item[0] == undefined ? item.projectName : item[0]);
+        setSites(siteNames);
+      }
+
+      if (colorData.length === 0) {
+        const res = await fetchWithLoading(
+          "https://sheeladecor.netlify.app/.netlify/functions/server/getPaintsColorData"
+        );
+        const data = await res.json();
+
         const parsed = [];
         data.body.forEach(([siteName, areaCollection, date]) => {
           const matches = areaCollection.match(/\[([^\]]+)\]/g);
@@ -106,10 +212,9 @@ function ColourPage() {
         });
         setTableData(parsed);
         dispatch(setColorData(data.body));
-      });
-    }else{
-      const parsed = [];
-          colorData.forEach(([siteName, areaCollection, date]) => {
+      } else {
+        const parsed = [];
+        colorData.forEach(([siteName, areaCollection, date]) => {
           const matches = areaCollection.match(/\[([^\]]+)\]/g);
           if (matches) {
             matches.forEach((block) => {
@@ -127,9 +232,15 @@ function ColourPage() {
             });
           }
         });
-      setTableData(parsed);
+        setTableData(parsed);
+      }
+    } catch (err) {
+      console.error("Error fetching data:", err);
     }
-  }, []);
+  };
+
+  fetchData();
+}, []);
 
   const filteredData = useMemo(() => {
     if (!searchTerm) return tableData;
