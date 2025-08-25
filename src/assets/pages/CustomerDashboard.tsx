@@ -114,6 +114,9 @@ const fetchProjectData = async () => {
     date: row[18],
     grandTotal: row[19],
     discountType: row[20],
+    bankDetails: deepClone(parseSafely(row[21], [])),
+    termsConditions: deepClone(parseSafely(row[22], [])),
+    defaulter : deepClone(row[23])
   }));
 
   return projects;
@@ -458,48 +461,18 @@ const CustomerDashboard = ({
   useEffect(() => {
     const fetchAndCalculate = async () => {
       const now = Date.now();
-
-      // Fetch Project Data
-      let projectList = [];
-      const cachedProjects = localStorage.getItem("projectData");
-
-      if (cachedProjects) {
-        const parsed = JSON.parse(cachedProjects);
-        const timeDiff = now - parsed.time;
-
-        if (timeDiff < 5 * 60 * 1000 && parsed.data.length > 0) {
-          projectList = parsed.data;
-          dispatch(setProjects(parsed.data));
-        } else {
-          try {
+      if (projects.length == 0) {
             const data = await fetchProjectData();
-            projectList = data;
             dispatch(setProjects(data));
-            localStorage.setItem(
-              "projectData",
-              JSON.stringify({ data, time: now })
-            );
-          } catch (error) {
-            console.error("Failed to fetch projects:", error);
-          }
-        }
-      } else {
-        try {
-          const data = await fetchProjectData();
-          projectList = data;
-          dispatch(setProjects(data));
-          localStorage.setItem(
-            "projectData",
-            JSON.stringify({ data, time: now })
-          );
-        } catch (error) {
-          console.error("Failed to fetch projects:", error);
-        }
+            setProjectData(data);
+      }
+       else {
+        setProjectData(projects);
       }
       // Filter & Calculate Project Stats
       let filteredProjects = [];
       if (customerDashboardData[0]) {
-        filteredProjects = projectList.filter(
+        filteredProjects = projects.filter(
           (p) =>
             p?.customerLink?.[0]?.toString().trim() ===
             customerDashboardData[0]?.toString().trim()
@@ -517,43 +490,15 @@ const CustomerDashboard = ({
 
         setDuePayment(totalAmount);
       }
-
-      // Fetch Payment Data
       let paymentList = [];
-      const cachedPayments = localStorage.getItem("paymentData");
-
-      if (cachedPayments) {
-        const parsed = JSON.parse(cachedPayments);
-        const timeDiff = now - parsed.time;
-
-        if (timeDiff < 5 * 60 * 1000 && parsed.data.length > 0) {
-          paymentList = parsed.data;
-          dispatch(setPaymentData(parsed.data));
-        } else {
-          try {
+      if (paymentData.length == 0) {
             const data = await fetchPaymentData();
-            paymentList = data;
             dispatch(setPaymentData(data));
-            localStorage.setItem(
-              "paymentData",
-              JSON.stringify({ data, time: now })
-            );
-          } catch (error) {
-            console.error("Failed to fetch payments:", error);
-          }
-        }
-      } else {
-        try {
-          const data = await fetchPaymentData();
-          paymentList = data;
-          dispatch(setPaymentData(data));
-          localStorage.setItem(
-            "paymentData",
-            JSON.stringify({ data, time: now })
-          );
-        } catch (error) {
-          console.error("Failed to fetch payments:", error);
-        }
+            paymentList = data;
+      } 
+       else {
+        paymentList = paymentData;
+
       }
 
       // Calculate Total & Per-Project Received Payments
@@ -613,10 +558,6 @@ const CustomerDashboard = ({
     if (response.status === 200) {
       const data = await fetchCustomers();
       dispatch(setCustomerData(data));
-      localStorage.setItem(
-        "customerData",
-        JSON.stringify({ data, time: Date.now() })
-      );
       alert("Customer Updated Successfully");
     } else {
       alert("Error in updating customer");
