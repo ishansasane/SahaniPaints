@@ -38,6 +38,32 @@ function ColourPage() {
   const projects = useSelector((state : RootState) => state.data.projects);
   const colorData = useSelector((state : RootState) => state.data.colorData);
 
+  const fetchColorData = async () => {
+    const response = await fetch("https://sheeladecor.netlify.app/.netlify/functions/server/getPaintsColorData");
+    const data = await response.json();
+            const parsed = [];
+        data.body.forEach(([siteName, areaCollection, date]) => {
+          const matches = areaCollection.match(/\[([^\]]+)\]/g);
+          if (matches) {
+            matches.forEach((block) => {
+              const parts = block
+                .replace(/[\[\]]/g, "")
+                .split(",")
+                .map((p) => p.trim());
+              parsed.push({
+                site: siteName,
+                area: parts[0] || "",
+                shadeName: parts[1] || "NA",
+                shadeCode: parts[2] || "",
+                date,
+              });
+            });
+          }
+        });
+        setTableData(parsed);
+        dispatch(setColorData(data.body));
+  }
+
   useEffect(() => {
     if(projects.length == 0){
       fetchWithLoading(
@@ -45,7 +71,7 @@ function ColourPage() {
       )
       .then((res) => res.json())
       .then((data) => {
-        const siteNames = data.body.map((item) => item[0]);
+        const siteNames = data.body.map((item) => item[0] == undefined ? item.projectName : item[0]);
         setSites(siteNames);
         dispatch(setProjects(data.body));
       });
@@ -152,7 +178,7 @@ function ColourPage() {
     setForm((prev) => ({ ...prev, areas: updatedAreas }));
   };
 
-  const handleAdd = () => {
+  const handleAdd = async () => {
     if (form.site && form.areas.every((a) => a.area && a.shadeCode)) {
       const areaString = form.areas
         .map((a) => {
@@ -183,7 +209,7 @@ function ColourPage() {
           alert(res.success ? (editMode ? "Updated!" : "Added!") : res.message);
           window.location.reload();
         });
-
+        await fetchColorData();
       setForm({
         site: "",
         areas: [{ area: "", shadeName: "", shadeCode: "" }],
@@ -208,7 +234,7 @@ function ColourPage() {
     setOpen(true);
   };
 
-  const handleDelete = (site, date) => {
+  const handleDelete = async (site, date) => {
     if (window.confirm(`Delete entry for ${site} on ${date}?`)) {
       fetchWithLoading(
         "https://sheeladecor.netlify.app/.netlify/functions/server/deletePaintsColorData",
@@ -223,6 +249,7 @@ function ColourPage() {
           alert(res.success ? "Deleted!" : res.message);
           window.location.reload();
         });
+        await fetchColorData();
     }
   };
 

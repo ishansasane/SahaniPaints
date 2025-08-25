@@ -84,7 +84,6 @@ function LaborsAttendance() {
 
   // Fetch sites data
   useEffect(() => {
-    console.log(projects);
     if(projects.length == 0){
           fetchWithLoading(
       "https://sheeladecor.netlify.app/.netlify/functions/server/getpaintsprojectdata"
@@ -98,10 +97,9 @@ function LaborsAttendance() {
       .catch((error) => console.error("Error fetching site data:", error));
     }else{
       const siteNames = projects.map((item) => item[0] == undefined ? item.projectName : item[0]);
-      console.log(siteNames);
       setSites(siteNames);
     }
-  }, []);
+  }, [dispatch, projects]);
 
   // Fetch available labors
   useEffect(() => {
@@ -118,7 +116,7 @@ function LaborsAttendance() {
     }else{
       setAvailableLabors(labours);
     }
-  }, []);
+  }, [dispatch, labours]);
 
   // Fetch all attendance data
   const fetchAttendanceData = () => {

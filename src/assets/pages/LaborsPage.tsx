@@ -85,7 +85,6 @@ function LaborsPage() {
   };
 
   const fetchAttendance = async () => {
-    console.log(labourAttendance);
     if(labourAttendance.length == 0){
       try {
         const res = await fetchWithLoading(
