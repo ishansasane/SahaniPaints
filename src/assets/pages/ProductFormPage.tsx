@@ -26,7 +26,7 @@ const ProductFormPage: React.FC = () => {
     ["Piece Based", ["Piece", "Items", "Sets"], ["e.g. Hooks, Tape"]],
     ["Fixed Length Items", ["Piece"], ["e.g. 12 feet rod"]],
     ["Fixed Area Items", ["Piece", "Roll"], ["e.g. 57 sq.ft. wallpaper"]],
-    ["Tailoring", ["Parts", "Sq.Feet"], ["e.g. Stitching"]],
+    ["Tailoring", ["Parts", "Sq.Feet", "Panha"], ["e.g. Stitching"]],
   ];
 
   const [productName, setProductName] = useState("");

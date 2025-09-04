@@ -14,8 +14,8 @@ import { RootState } from "../Redux/store";
 
 const ProjectDetails = ({
   selectedCustomer,
-  interior = [],
-  salesdata = [],
+  interior,
+  salesdata,
   interiorArray = "",
   setInteriorArray,
   salesAssociateArray = "",
@@ -96,11 +96,12 @@ const ProjectDetails = ({
   useEffect(() => {
     const loadData = async () => {
       if (interiorData.length > 0) {
-        setInteriorArray(interiorData);
+        console.log(interiorData);
+        setInterior(interiorData);
       } else {
         const data = await fetchInteriors();
         dispatch(setInteriorData(data));
-        setInteriorArray(data);
+        setInterior(data);
       }
     };
     loadData();

@@ -177,28 +177,17 @@ const MaterialSelectionComponent = ({
   const useInitialFetch = (dispatch, setCompanyData, setDesignData) => {
     useEffect(() => {
       const fetchAndCache = async (key, fetchFn, dispatchFn) => {
-        const cached = localStorage.getItem(key);
-        const now = Date.now();
 
-        if (cached) {
-          const { data, time } = JSON.parse(cached);
-          if (now - time < ONE_HOUR) {
-            dispatch(dispatchFn(data));
-            return;
-          }
-        }
-
-        try {
+        if (key.length != 0) {
+          return;
+        }else{
           const data = await fetchFn();
-          dispatch(dispatchFn(data));
-          localStorage.setItem(key, JSON.stringify({ data, time: now }));
-        } catch (error) {
-          console.error(`Failed to fetch ${key}:`, error);
+          dispatch(dispatchFn(data));          
         }
       };
 
-      fetchAndCache("companyData", fetchCompanyData, setCompanyData);
-      fetchAndCache("designData", fetchDesignData, setDesignData);
+      fetchAndCache(companyData, fetchCompanyData, setCompanyData);
+      fetchAndCache(designData, fetchDesignData, setDesignData);
     }, [dispatch]);
   };
 
@@ -295,10 +284,6 @@ const MaterialSelectionComponent = ({
     if (response.status === 200) {
       const data = await fetchCatalogues();
       dispatch(setCatalogs(data));
-      localStorage.setItem(
-        "catalogueData",
-        JSON.stringify({ data, time: Date.now() })
-      );
       setCatalogueName("");
       setCatalogueDescription("");
       setIsCatalogueOpen(false);
@@ -325,10 +310,6 @@ const MaterialSelectionComponent = ({
     if (response.status === 200) {
       const data = await fetchCompanyData();
       dispatch(setCompanyData(data));
-      localStorage.setItem(
-        "companyData",
-        JSON.stringify({ data, time: Date.now() })
-      );
       setIsCompantyOpen(false);
       alert("Company Added");
     } else {

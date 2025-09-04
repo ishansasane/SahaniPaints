@@ -1674,12 +1674,12 @@ function AddProjectForm() {
   // interior data
   useEffect(() => {
     const loadData = async () => {
-      if (interiorData.length > 0) {
-        setInteriorArray(interiorData);
+      if (interiorData.length != 0) {
+        setInterior(interiorData);
       } else {
         const data = await fetchInteriors();
         dispatch(setInteriorData(data));
-        setInteriorArray(data);
+        setInterior(data);
       }
     };
     loadData();
